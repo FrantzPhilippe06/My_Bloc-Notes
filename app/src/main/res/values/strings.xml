@@ -1,3 +1,21 @@
 <resources>
-    <string name="app_name">My Bloc-Notes</string>
+    <string name="app_name">            My Bloc-Notes</string>
+    <string name="message_aucune_note">Aucune note. Appuie sur + pour en créer une.</string>
+    <string name="description_bouton_nouvelle_note">Créer une nouvelle note</string>
+    <string name="menu_toutes_les_notes">Toutes les notes</string>
+    <string name="menu_a_propos">À propos</string>
+    <string name="note_epicerie">Note pour l\'épicerie</string>
+    <string name="note_phylo">Cours de phylo</string>
+    <string name="note">
+        Lait, œufs, pain, beurre \n
+        \n
+        Fruits à acheter \n
+        \n
+        Vérifier les rabais |
+    </string>
+
+    <string name="action_annuler">Annuler</string>
+    <string name="action_refaire">Refaire</string>
+    <string name="action_troisieme">Save</string>
+
 </resources>
