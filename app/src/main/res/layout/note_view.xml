@@ -20,23 +20,30 @@
         app:navigationIconTint="#FFFFFF"
         app:titleTextColor="#BCBCBC" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="378dp"
-        android:layout_height="280dp"
-        android:text="@string/note"
-        tools:layout_editor_absoluteX="17dp"
-        tools:layout_editor_absoluteY="144dp" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="184dp"
-        android:layout_height="33dp"
-        android:text="@string/note_epicerie"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textSize="20sp"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="85dp" />
+    <EditText
+        android:id="@+id/editContenu"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:gravity="top"
+        android:hint="Écrire votre note..."
+        android:inputType="textMultiLine|textCapSentences"
+        app:layout_constraintTop_toBottomOf="@id/editNom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <EditText
+        android:id="@+id/editNom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Titre de la note"
+        android:inputType="textCapSentences"
+        app:layout_constraintTop_toBottomOf="@id/barre_outils"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
