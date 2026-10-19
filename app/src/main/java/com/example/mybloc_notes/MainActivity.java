@@ -2,8 +2,6 @@
 package com.example.mybloc_notes;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,15 +10,14 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.appbar.MaterialToolbar;
-
+import android.view.View;
+import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
     private RecyclerView listeNotes;
     private NoteAdapter noteAdapter;
     private ArrayList<Note> notes;
@@ -29,14 +26,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        // Menu burger
         DrawerLayout tiroir = findViewById(R.id.tiroir);
         MaterialToolbar barre = findViewById(R.id.barre_outils);
-
         barre.setNavigationOnClickListener(
                 v -> tiroir.openDrawer(GravityCompat.START)
         );
@@ -96,9 +90,7 @@ public class MainActivity extends AppCompatActivity {
                             systemBars.right,
                             systemBars.bottom
                     );
-
                     return insets;
-                }
-        );
+                });
     }
 }
