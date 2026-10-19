@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginTop="4dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginBottom="4dp"
-    app:cardBackgroundColor="#D9D9D9"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:layout_margin="8dp"
+
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,44 +17,33 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Première ligne de la note -->
-
-        <EditText
-            android:id="@+id/editNom"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Titre de la note"
-            android:inputType="textCapSentences"
-            android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@id/barre_outils"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <EditText
-            android:id="@+id/editContenu"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_margin="16dp"
-            android:gravity="top"
-            android:hint="Écrire votre note..."
-            android:inputType="textMultiLine|textCapSentences"
-            app:layout_constraintTop_toBottomOf="@id/editNom"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-
-        <!-- Date et heure de dernière modification -->
         <TextView
-            android:id="@+id/date_note"
+            android:id="@+id/textNom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Titre de la note"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textContenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="Aperçu du contenu"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="end"
-            android:textSize="12sp"
-            tools:text="08:23 | 2026-09-21" />
+            android:text="19/10/2026"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>
