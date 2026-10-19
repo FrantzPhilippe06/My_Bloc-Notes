@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Barre du haut avec l'icône du menu burger -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/barre_outils"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#615F5F"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_edition"
+        app:navigationIcon="@drawable/chevron_backward"
+        app:navigationIconTint="#FFFFFF"
+        app:titleTextColor="#BCBCBC" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="378dp"
+        android:layout_height="280dp"
+        android:text="@string/note"
+        tools:layout_editor_absoluteX="17dp"
+        tools:layout_editor_absoluteY="144dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="184dp"
+        android:layout_height="33dp"
+        android:text="@string/note_epicerie"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="20sp"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="85dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

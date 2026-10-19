@@ -19,26 +19,32 @@
         android:padding="16dp">
 
         <!-- Première ligne de la note -->
-        <TextView
-            android:id="@+id/titre_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            tools:text="Liste d'épicerie" />
 
-        <!-- Aperçu du reste du texte -->
-        <TextView
-            android:id="@+id/apercu_note"
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/editNom"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textSize="14sp"
-            tools:text="Lait, pain, oeufs, pommes..." />
+            android:layout_margin="16dp"
+            android:hint="Titre de la note"
+            android:inputType="textCapSentences"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@id/barre_outils"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <EditText
+            android:id="@+id/editContenu"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            android:gravity="top"
+            android:hint="Écrire votre note..."
+            android:inputType="textMultiLine|textCapSentences"
+            app:layout_constraintTop_toBottomOf="@id/editNom"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <!-- Date et heure de dernière modification -->
         <TextView
