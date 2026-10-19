@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 import java.util.ArrayList;
+import android.content.Intent;
+import com.google.android.material.floatingactionbutton.*;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView listeNotes;
@@ -28,6 +30,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        FloatingActionButton boutonAjouter = findViewById(R.id.bouton_nouvelle_note);
+
+        boutonAjouter.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    EditionActivity.class
+            );
+            startActivity(intent);
+        });
 
         DrawerLayout tiroir = findViewById(R.id.tiroir);
         MaterialToolbar barre = findViewById(R.id.barre_outils);
