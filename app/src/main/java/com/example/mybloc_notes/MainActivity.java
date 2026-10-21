@@ -1,20 +1,33 @@
 package com.example.mybloc_notes;
 
+import android.app.Activity;
 import android.os.Bundle;
+
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultCallerLauncher;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.appbar.MaterialToolbar;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
 import java.util.ArrayList;
+
 import android.content.Intent;
+
 import com.google.android.material.floatingactionbutton.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +35,38 @@ public class MainActivity extends AppCompatActivity {
     private NoteAdapter noteAdapter;
     private ArrayList<Note> notes;
     private TextView texteAucuneNote;
+    private final ActivityResultLauncher<Intent> ouvrirEditeur = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Log.d("TEST_SAVE", "Résultat reçu : " + result.getResultCode());
+                Log.d("TEST_SAVE", "Données reçues : " + result.getData());
+
+                if (result.getResultCode() == Activity.RESULT_OK
+                        && result.getData() != null) {
+
+                    Intent data = result.getData();
+
+                    String nom = data.getStringExtra("nom");
+                    String contenu = data.getStringExtra("contenu");
+
+                    if (nom != null && contenu != null) {
+
+                        // Créer une nouvelle note
+                        Note nouvelleNote = new Note(nom, contenu);
+
+                        // Ajouter la note au début de la liste
+                        notes.add(0, nouvelleNote);
+
+                        // Actualiser le RecyclerView
+                        noteAdapter.notifyItemInserted(0);
+                        listeNotes.scrollToPosition(0);
+
+                        // Masquer le message Aucune note
+                        texteAucuneNote.setVisibility(View.GONE);
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this,
                     EditionActivity.class
             );
-            startActivity(intent);
+            ouvrirEditeur.launch(intent);
         });
 
         DrawerLayout tiroir = findViewById(R.id.tiroir);
