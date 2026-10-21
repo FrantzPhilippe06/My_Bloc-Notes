@@ -1,12 +1,11 @@
 package com.example.mybloc_notes;
 
+import static android.widget.Toast.LENGTH_SHORT;
+
 import android.app.Activity;
 import android.os.Bundle;
-
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultCallerLauncher;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -14,19 +13,15 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.material.appbar.MaterialToolbar;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.*;
 
@@ -35,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private NoteAdapter noteAdapter;
     private ArrayList<Note> notes;
     private TextView texteAucuneNote;
+    private NotesFileHelper notesFileHelper;
+
     private final ActivityResultLauncher<Intent> ouvrirEditeur = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -54,15 +51,29 @@ public class MainActivity extends AppCompatActivity {
                         // Créer une nouvelle note
                         Note nouvelleNote = new Note(nom, contenu);
 
-                        // Ajouter la note au début de la liste
-                        notes.add(0, nouvelleNote);
+                        ArrayList<Note> nouvellesNotes = new ArrayList<>(notes);
+                        nouvellesNotes.add(0, nouvelleNote);
 
-                        // Actualiser le RecyclerView
-                        noteAdapter.notifyItemInserted(0);
-                        listeNotes.scrollToPosition(0);
+                        try {
+                            // enregistre la nouvelle note
+                            notesFileHelper.enregistrerNotes(nouvellesNotes);
 
-                        // Masquer le message Aucune note
-                        texteAucuneNote.setVisibility(View.GONE);
+                            // Mettre à jour la nouvelle note
+                            notes.add(0, nouvelleNote);
+
+                            noteAdapter.notifyItemInserted(0);
+                            listeNotes.scrollToPosition(0);
+
+                            // Masquer le message Aucune note
+                            texteAucuneNote.setVisibility(View.GONE);
+
+                            Toast.makeText(this, "Note enregistrée..", LENGTH_SHORT).show();
+
+                        } catch (Exception e) {
+                            Log.e("NOTE_JSON", "Erreur d'enregistrement..");
+                            Toast.makeText(this, "Impossible d'enregistrer la note..", LENGTH_SHORT).show();
+                        }
+
                     }
                 }
             }
@@ -73,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        notesFileHelper = new NotesFileHelper(this);
 
         FloatingActionButton boutonAjouter = findViewById(R.id.bouton_nouvelle_note);
 
@@ -94,24 +106,13 @@ public class MainActivity extends AppCompatActivity {
         listeNotes = findViewById(R.id.liste_notes);
         texteAucuneNote = findViewById(R.id.texte_aucune_note);
 
-        // Créer la liste des notes
-        notes = new ArrayList<>();
-
-        // Ajouter des notes de test
-        notes.add(new Note(
-                "Liste d'épicerie",
-                "Lait, pain, œufs, pommes et beurre"
-        ));
-
-        notes.add(new Note(
-                "Cours Android",
-                "Réviser Java et RecyclerView"
-        ));
-
-        notes.add(new Note(
-                "Mes objectifs",
-                "Terminer mon projet Android"
-        ));
+        // Ajouter des notes persistante
+        try {
+            notes = notesFileHelper.chargerNotes();
+        } catch (Exception e) {
+            Log.e("Notes_JSON", "Erreur de chargement");
+            notes = new ArrayList<>();
+        }
 
         // Configurer le RecyclerView
         listeNotes.setLayoutManager(

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.appbar.MaterialToolbar;
 
@@ -46,8 +45,6 @@ public class EditionActivity extends AppCompatActivity {
                 note.putExtra("contenu", contenu);
 
                 setResult(Activity.RESULT_OK, note);
-
-                Toast.makeText(this,"Note enregistrer",Toast.LENGTH_SHORT).show();
                 finish();
                 return true;
             }
