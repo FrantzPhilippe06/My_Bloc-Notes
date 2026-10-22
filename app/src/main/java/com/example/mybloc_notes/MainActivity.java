@@ -3,6 +3,7 @@ package com.example.mybloc_notes;
 import static android.widget.Toast.LENGTH_SHORT;
 
 import android.app.Activity;
+import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -14,21 +15,15 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.material.appbar.MaterialToolbar;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
 import android.content.Intent;
 import android.widget.Toast;
-
 import com.google.android.material.floatingactionbutton.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -83,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
                             nouvellesNotes.set(position, noteModifiee);
 
                         } else {
-
                             // Créer une nouvelle note
                             Note nouvelleNote = new Note(nom, contenu);
 
@@ -103,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+                            nouvelleNote.setId(nouvelId);
+                            nouvellesNotes.add(0, nouvelleNote);
                         }
 
                         try {
@@ -205,6 +201,59 @@ public class MainActivity extends AppCompatActivity {
 
             ouvrirEditeur.launch(intent);
         });
+
+
+        noteAdapter.setOnLongClickListener(note -> {
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Supprimer la note")
+                    .setMessage("Voulez-vous supprimer « "
+                            + note.getNom() + " » ?")
+
+                    .setNegativeButton("Annuler", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+
+                    .setPositiveButton("Supprimer", (dialog, which) -> {
+                        // Préparer la liste sans la note sélectionnée
+                        ArrayList<Note> nouvellesNotes =
+                                new ArrayList<>(notes);
+
+                        nouvellesNotes.remove(note);
+
+                        try {
+                            // Enregistrer la nouvelle liste
+                            notesFileHelper.enregistrerNotes(nouvellesNotes);
+
+                            // Actualiser les notes affichées
+                            notes.clear();
+                            notes.addAll(nouvellesNotes);
+                            noteAdapter.notifyDataSetChanged();
+
+                            // Afficher "Aucune note" si la liste est vide
+                            if (notes.isEmpty()) {
+                                texteAucuneNote.setVisibility(View.VISIBLE);
+                            } else {
+                                texteAucuneNote.setVisibility(View.GONE);
+                            }
+
+                            Toast.makeText(this,
+                                    "Note supprimée",
+                                    Toast.LENGTH_SHORT).show();
+
+                        } catch (Exception e) {
+                            Log.e("NOTES_JSON",
+                                    "Erreur de suppression", e);
+
+                            Toast.makeText(this,
+                                    "Impossible de supprimer la note",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    })
+
+                    .show();
+        });
+
 
         // Relier l'adaptateur au RecyclerView
         listeNotes.setAdapter(noteAdapter);

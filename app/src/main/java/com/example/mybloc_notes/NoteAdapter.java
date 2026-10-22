@@ -4,10 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -21,13 +19,26 @@ public class NoteAdapter
     private List<Note> ListNotes;
 
     private OnNoteClickListener listener;
-
     public interface OnNoteClickListener {
         void onNoteClick(Note note);
     }
 
     public void setOnClickListener(OnNoteClickListener listener){
         this.listener = listener;
+    }
+
+    private OnNoteLongClickListener longClickListener;
+
+    // Interface pour un appui long
+    public interface OnNoteLongClickListener {
+        void onNoteLongClick(Note note);
+    }
+
+    // Permet de définir l'action de l'appui long
+    public void setOnLongClickListener(
+            OnNoteLongClickListener listener) {
+
+        this.longClickListener = listener;
     }
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder {
@@ -80,12 +91,22 @@ public class NoteAdapter
         String date = format.format(note.getDateModification());
 
         holder.textDate.setText(date);
-
         holder.itemView.setOnClickListener(v -> {
             if (listener != null){
                 listener.onNoteClick(note);
             }
         });
+
+
+        holder.itemView.setOnLongClickListener(v -> {
+
+            if (longClickListener != null) {
+                longClickListener.onNoteLongClick(note);
+                return true;
+            }
+            return false;
+        });
+
     }
 
     @Override
