@@ -21,6 +21,15 @@ public class EditionActivity extends AppCompatActivity {
         editNom = findViewById(R.id.editNom);
         editContenu = findViewById(R.id.editContenu);
 
+        Intent intent = getIntent();
+        if (intent.hasExtra("noteId")){
+            String nom = intent.getStringExtra("nom");
+            String contenu = intent.getStringExtra("contenu");
+
+            editNom.setText(nom);
+            editContenu.setText(contenu);
+        }
+
         MaterialToolbar barre = findViewById(R.id.barre_outils);
 
         barre.setNavigationIcon(R.drawable.chevron_backward);
@@ -43,6 +52,11 @@ public class EditionActivity extends AppCompatActivity {
                 Intent note = new Intent();
                 note.putExtra("nom", titre);
                 note.putExtra("contenu", contenu);
+
+                if(getIntent().hasExtra("noteId")){
+                    long noteId = getIntent().getLongExtra("noteId",0);
+                    note.putExtra("noteId", noteId);
+                }
 
                 setResult(Activity.RESULT_OK, note);
                 finish();

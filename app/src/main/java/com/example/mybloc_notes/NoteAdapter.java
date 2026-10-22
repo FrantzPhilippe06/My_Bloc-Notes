@@ -14,10 +14,20 @@ import java.util.Locale;
 
 public class NoteAdapter
         extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
-
-    private List<Note> ListNotes;
     public NoteAdapter(List<Note> listNotes) {
         this.ListNotes = listNotes;
+    }
+
+    private List<Note> ListNotes;
+
+    private OnNoteClickListener listener;
+
+    public interface OnNoteClickListener {
+        void onNoteClick(Note note);
+    }
+
+    public void setOnClickListener(OnNoteClickListener listener){
+        this.listener = listener;
     }
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder {
@@ -70,6 +80,12 @@ public class NoteAdapter
         String date = format.format(note.getDateModification());
 
         holder.textDate.setText(date);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null){
+                listener.onNoteClick(note);
+            }
+        });
     }
 
     @Override

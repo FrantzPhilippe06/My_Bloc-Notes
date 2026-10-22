@@ -4,6 +4,7 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 import android.app.Activity;
 import android.os.Bundle;
+
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,13 +14,18 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.appbar.MaterialToolbar;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
 import java.util.ArrayList;
+
 import android.content.Intent;
 import android.widget.Toast;
 
@@ -32,52 +38,113 @@ public class MainActivity extends AppCompatActivity {
     private TextView texteAucuneNote;
     private NotesFileHelper notesFileHelper;
 
-    private final ActivityResultLauncher<Intent> ouvrirEditeur = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                Log.d("TEST_SAVE", "Résultat reçu : " + result.getResultCode());
-                Log.d("TEST_SAVE", "Données reçues : " + result.getData());
+    private final ActivityResultLauncher<Intent> ouvrirEditeur =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
 
-                if (result.getResultCode() == Activity.RESULT_OK
-                        && result.getData() != null) {
-
-                    Intent data = result.getData();
-
-                    String nom = data.getStringExtra("nom");
-                    String contenu = data.getStringExtra("contenu");
-
-                    if (nom != null && contenu != null) {
-
-                        // Créer une nouvelle note
-                        Note nouvelleNote = new Note(nom, contenu);
-
-                        ArrayList<Note> nouvellesNotes = new ArrayList<>(notes);
-                        nouvellesNotes.add(0, nouvelleNote);
-
-                        try {
-                            // enregistre la nouvelle note
-                            notesFileHelper.enregistrerNotes(nouvellesNotes);
-
-                            // Mettre à jour la nouvelle note
-                            notes.add(0, nouvelleNote);
-
-                            noteAdapter.notifyItemInserted(0);
-                            listeNotes.scrollToPosition(0);
-
-                            // Masquer le message Aucune note
-                            texteAucuneNote.setVisibility(View.GONE);
-
-                            Toast.makeText(this, "Note enregistrée..", LENGTH_SHORT).show();
-
-                        } catch (Exception e) {
-                            Log.e("NOTE_JSON", "Erreur d'enregistrement..");
-                            Toast.makeText(this, "Impossible d'enregistrer la note..", LENGTH_SHORT).show();
+                        if (result.getResultCode() != Activity.RESULT_OK
+                                || result.getData() == null) {
+                            return;
                         }
 
+                        Intent data = result.getData();
+
+                        String nom = data.getStringExtra("nom");
+                        String contenu = data.getStringExtra("contenu");
+
+                        if (nom == null || contenu == null) {
+                            return;
+                        }
+
+                        ArrayList<Note> nouvellesNotes =
+                                new ArrayList<>(notes);
+
+                        if (data.hasExtra("noteId")) {
+
+                            // Modifier une note existante
+                            long id = data.getLongExtra("noteId", -1);
+                            int position = trouverPositionNote(id);
+
+                            if (position == -1) {
+                                Toast.makeText(this,
+                                        "Note introuvable",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Préparer la note modifiée
+                            Note ancienneNote = notes.get(position);
+                            Note noteModifiee = new Note(nom, contenu);
+
+                            noteModifiee.setId(ancienneNote.getId());
+
+                            // Remplacer l'ancienne note
+                            nouvellesNotes.set(position, noteModifiee);
+
+                        } else {
+
+                            // Créer une nouvelle note
+                            Note nouvelleNote = new Note(nom, contenu);
+
+                            // Trouver un identifiant unique
+                            long nouvelId = System.currentTimeMillis();
+
+                            // Vérifier les identifiants déjà utilisés
+                            boolean existe = true;
+
+                            while (existe) {
+                                existe = false;
+
+                                for (Note note : nouvellesNotes) {
+                                    if (note.getId() == nouvelId) {
+                                        nouvelId++;
+                                        existe = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        try {
+                            // Sauvegarder la liste complète
+                            notesFileHelper.enregistrerNotes(nouvellesNotes);
+
+                            // Mettre à jour la liste utilisée
+                            notes.clear();
+                            notes.addAll(nouvellesNotes);
+
+                            // Trier par date de modification
+                            notes.sort((a, b) ->
+                                    Long.compare(
+                                            b.getDateModification(),
+                                            a.getDateModification()
+                                    )
+                            );
+
+                            noteAdapter.notifyDataSetChanged();
+
+                            if (!notes.isEmpty()) {
+                                listeNotes.scrollToPosition(0);
+                            }
+
+                            texteAucuneNote.setVisibility(
+                                    notes.isEmpty() ? View.VISIBLE : View.GONE
+                            );
+
+                            Toast.makeText(this,
+                                    "Note enregistrée",
+                                    Toast.LENGTH_SHORT).show();
+
+                        } catch (Exception e) {
+                            Log.e("NOTES_JSON",
+                                    "Erreur d'enregistrement", e);
+
+                            Toast.makeText(this,
+                                    "Impossible d'enregistrer la note",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            }
-    );
+            );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +176,11 @@ public class MainActivity extends AppCompatActivity {
         // Ajouter des notes persistante
         try {
             notes = notesFileHelper.chargerNotes();
+
+            notes.sort((a, b) -> Long.compare(
+                    b.getDateModification(),
+                    a.getDateModification()
+            ));
         } catch (Exception e) {
             Log.e("Notes_JSON", "Erreur de chargement");
             notes = new ArrayList<>();
@@ -121,6 +193,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Créer l'adaptateur
         noteAdapter = new NoteAdapter(notes);
+
+        noteAdapter.setOnClickListener(note -> {
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    EditionActivity.class
+            );
+            intent.putExtra("noteId", note.getId());
+            intent.putExtra("nom", note.getNom());
+            intent.putExtra("contenu", note.getContenu());
+
+            ouvrirEditeur.launch(intent);
+        });
 
         // Relier l'adaptateur au RecyclerView
         listeNotes.setAdapter(noteAdapter);
@@ -148,5 +232,16 @@ public class MainActivity extends AppCompatActivity {
                     );
                     return insets;
                 });
+    }
+
+
+    private int trouverPositionNote(long id) {
+
+        for (int i = 0; i < notes.size(); i++) {
+            if (notes.get(i).getId() == id) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
